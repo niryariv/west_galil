@@ -22,6 +22,17 @@
 		#map {
 			height: 100%; width: 100vw;
 		}
+
+		.leaflet-popup-content-wrapper {
+			direction: rtl;
+		  font-size:16px;
+		  line-height:24px;
+	  }
+
+		.nav_link {
+			text-align: center;
+		}
+
 	</style>
 </head>
 <body>
@@ -100,9 +111,16 @@ var data={
 
 	L.geoJSON(data, {
 	    pointToLayer: function (feature, latlng) {
-				f_type = feature.properties.type;
-				i = L.MakiMarkers.icon({icon: f_type, color: colors[f_type], size: "l"});
-	      return L.marker(latlng, {icon: i}).bindPopup(feature.properties.name);
+				console.log(latlng);
+				var f_type = feature.properties.type;
+				var i = L.MakiMarkers.icon({icon: f_type, color: colors[f_type], size: "l"});
+
+				var waze = "waze://?ll="+latlng.lng+","+latlng.lat;
+
+				var text = "<b>"+feature.properties.name+"</b>\n";
+				text += '<p class="nav_link"><a href="'+waze+'">נווט עם ווייז</a></p>';
+
+			  return L.marker(latlng, {icon: i}).bindPopup(text);
 	    }
 	}).addTo(map);
 
