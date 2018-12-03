@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>מפת תיירות - גליל מערבי</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+	<script src="Leaflet.MakiMarkers.js"></script>
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		#map {
+			height: 100%; width: 100vw;
+		}
+	</style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+var data={
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "קפה הוורד",
+        "type": "cafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.272979736328125,
+          32.99880214876104
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "אגם המונפורט",
+        "type": "park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.291690826416016,
+          33.00510058076582
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "מטעמי הכפר",
+        "type": "restaurant"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.26740074157715,
+          33.013053958074586
+        ]
+      }
+    }
+  ]
+}
+
+
+
+	var colors = {
+		'cafe'				: '#85AFDF',
+		'restaurant'	: '#DD996A',
+		'park'				: '#789667'
+	}
+
+
+	var map = L.map('map').setView([32.9525,35.2654], 11).setMaxBounds([[33.1064,35.0814],[32.8905,35.3746]]);
+
+	L.MakiMarkers.accessToken = "pk.eyJ1IjoibmlyeWFyaXYiLCJhIjoiQjdJeWdqZyJ9.pZOwn6stABGoptmp0DH1wg";
+
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+	    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+	    maxZoom: 18,
+	    id: 'mapbox.streets',
+	    accessToken: 'pk.eyJ1IjoibmlyeWFyaXYiLCJhIjoiQjdJeWdqZyJ9.pZOwn6stABGoptmp0DH1wg'
+	}).addTo(map);
+
+
+	L.geoJSON(data, {
+	    pointToLayer: function (feature, latlng) {
+				f_type = feature.properties.type;
+				i = L.MakiMarkers.icon({icon: f_type, color: colors[f_type], size: "l"});
+	      return L.marker(latlng, {icon: i}).bindPopup(feature.properties.name);
+	    }
+	}).addTo(map);
+
+</script>
+</body>
+</html>
