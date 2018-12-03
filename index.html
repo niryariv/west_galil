@@ -19,11 +19,13 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+
 	<script src="Leaflet.MakiMarkers.js"></script>
+
+	<script src="papaparse.min.js"></script>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.1/dist/L.Control.Locate.min.css" />
-
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.1/dist/L.Control.Locate.min.js" charset="utf-8"></script>
 
 	<style>
@@ -53,126 +55,6 @@
 <div id='map'></div>
 
 <script>
-var data={
-  "type": "FeatureCollection",
-  "features": [
-		{
-      "type": "Feature",
-			"properties": {
-        "name": "חומוס סבבה",
-        "type": "restaurant"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          35.15067100524902,
-          33.073814219852025
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-			"properties": {
-				"name": "על החורש",
-				"type": "park"
-			},
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          35.129127502441406,
-          33.04205207918368
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-			"properties": {
-				"name": "ממתקי הגליל",
-				"type": "bakery"
-			},
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          35.29864311218262,
-          32.963594634713886
-        ]
-      }
-    },
-		{
-			"type": "Feature",
-			"properties": {
-				"name": "החנות של יסמין",
-				"type": "shop"
-			},
-			"geometry": {
-				"type": "Point",
-				"coordinates": [
-					35.082693099975586,
-					32.98217212792488
-				]
-			}
-		},
-		{
-			"type": "Feature",
-			"properties": {
-        "name": "טחנת הקפה",
-        "type": "cafe"
-      },
-			"geometry": {
-				"type": "Point",
-				"coordinates": [
-					35.37524700164795,
-					32.964206746155966
-				]
-			}
-		},
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "קפה הוורד",
-        "type": "cafe"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          35.272979736328125,
-          32.99880214876104
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "אגם המונפורט",
-        "type": "park"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          35.291690826416016,
-          33.00510058076582
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "מטעמי הכפר",
-        "type": "restaurant"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          35.26740074157715,
-          33.013053958074586
-        ]
-      }
-    }
-  ]
-}
-
-
-
 	var colors = {
 		'cafe'				: '#85AFDF',
 		'restaurant'	: '#DD996A',
@@ -198,20 +80,25 @@ var data={
 		onLocationError: function(control){return false;}
 	}).addTo(map);
 
-	L.geoJSON(data, {
-	    pointToLayer: function (feature, latlng) {
-				console.log(latlng);
-				var f_type = feature.properties.type;
-				var i = L.MakiMarkers.icon({icon: f_type, color: colors[f_type], size: "l"});
 
-				// var waze = "waze://?ll="+latlng.lng+","+latlng.lat;
-				var waze = "https://waze.com/ul?ll="+latlng.lng+","+latlng.lat+"&z=10&navigate=yes";
-				var text = "<b>"+feature.properties.name+"</b>\n";
-				text += '<p class="nav_link"><a href="'+waze+'">נווט עם ווייז</a></p>';
+	Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vTPbbl97bhZQOVIMG_aivuqkZPiKMSkhykdDhzvIJ5PzR0ExVXimspXeL5Yg2B5tb95xqOYT4GmiHmR/pub?output=csv", {
+		download: true,
+		header: true,
+		complete: function(results) {
+			results.data.forEach(add_point);
+		}
+	});
 
-			  return L.marker(latlng, {icon: i}).bindPopup(text);
-	    }
-	}).addTo(map);
+
+	function add_point(p){
+		var i = L.MakiMarkers.icon({icon: p.type, color: colors[p.type], size: "l"});
+
+		var waze = "https://waze.com/ul?ll="+p.lon+","+p.lat+"&z=10&navigate=yes";
+		var text = "<b>"+p.name+"</b>\n";
+		text += '<p class="nav_link"><a href="'+waze+'">נווט עם ווייז</a></p>';
+
+		L.marker([p.lat, p.lon], {icon: i}).bindPopup(text).addTo(map);
+	}
 
 </script>
 </body>
