@@ -196,8 +196,8 @@ var data={
 				var f_type = feature.properties.type;
 				var i = L.MakiMarkers.icon({icon: f_type, color: colors[f_type], size: "l"});
 
-				var waze = "waze://?ll="+latlng.lng+","+latlng.lat;
-
+				// var waze = "waze://?ll="+latlng.lng+","+latlng.lat;
+				var waze = "https://waze.com/ul?ll="+latlng.lng+","+latlng.lat+"&z=10&navigate=yes";
 				var text = "<b>"+feature.properties.name+"</b>\n";
 				text += '<p class="nav_link"><a href="'+waze+'">נווט עם ווייז</a></p>';
 
